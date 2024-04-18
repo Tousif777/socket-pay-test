@@ -32,13 +32,14 @@ app.post('/randompay/webhook', async (req, res) => {
             const success = type === 'payment_success';
 
             // Emit payment status update to Socket.IO clients
-            io.emit('paymentStatus', { paymentId, success });
-            console.log('Payment status updated frm webhook', { paymentId, success });
+            io.emit('paymentStatus', { paymentId, success , message : 'Payment status updated' });
+            console.log('Payment status updated frm webhook', {  success , message : 'Payment status updated' });
         }
 
         res.sendStatus(200);
     } catch (error) {
         console.error('Error processing webhook event:', error);
+        io.emit('paymentStatus', {  success : false , message : 'Payment status updated failed' });
         res.sendStatus(500);
     }
 });
@@ -75,7 +76,7 @@ function processPayment(paymentId, amount) {
         // Simulate processing time
         setTimeout(() => {
             // Simulate success or failure randomly
-            const success = Math.random() < 0.9; // 80% chance of success
+            const success = Math.random() < 0.8; // 80% chance of success
             if (success) {
                 resolve(); // Payment successful
             } else {

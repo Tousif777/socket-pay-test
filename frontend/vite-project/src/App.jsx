@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
-  const [paymentStatus, setPaymentStatus] = useState('');
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
@@ -23,10 +24,12 @@ function App() {
     setSocket(newSocket);
 
     // Event listener for 'paymentStatus' event
-    newSocket.on('paymentStatus', ({ paymentId, success }) => {
+    newSocket.on('paymentStatus', ({  success }) => {
       // Check if the received paymentId matches the current paymentId
-      if (paymentId === paymentId) {
-        setPaymentStatus(success ? 'Payment Successful' : 'Payment Failed');
+       if (success === true) { 
+        toast.success('Payment successful');
+      } else {
+        toast.error('Payment failed');
       }
     });
 
@@ -42,14 +45,8 @@ function App() {
         userName: "Tousif",
       })
     })
-      .then(response => {
-        if (!response.ok) {
-          setPaymentStatus('Payment Failed');
-        }
-      })
       .catch(error => {
         console.error('Error making payment:', error);
-        setPaymentStatus('Payment Failed');
       })
       .finally(() => {
         // Turn off the socket connection after receiving the response
@@ -58,13 +55,12 @@ function App() {
       });
   };
   // Function to handle input change for username
-  return (
+  return (<>
+    <ToastContainer />
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
       <h1 style={{ fontSize: '24px', marginBottom: '20px' }}>Welcome to RandomPay</h1>
       <button style={{ padding: '10px 20px', fontSize: '16px', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }} onClick={handlePayment}>Make Payment</button>
-      {paymentStatus && <p style={{ fontSize: '16px', marginTop: '20px', color: paymentStatus === 'Payment Successful' ? 'green' : 'red' }}>{paymentStatus}</p>}
-    </div>
-
+    </div></>
   );
 }
 
